@@ -26,29 +26,29 @@ public class Frame extends JFrame {
         this.setVisible(true);
 
         points_generator();
-        straights_equation();
+        //straights_equation();
     }
 
     void points_generator()
     {
         // Declaratrion of arrays, selecting points:
-        points = new voronoi.Point[6];
-        crossing_points = new voronoi.Point[5][];
-        int counter=5;
-        for(int i=0; i<5; i++)
+        points = new voronoi.Point[3];
+        crossing_points = new voronoi.Point[2][];
+        int counter=2;
+        for(int i=0; i<2; i++)
         {
             crossing_points[i]=new voronoi.Point[counter];
             counter--;
         }
         counter=0;
-        for(int i=0; i<5; i++)
+        for(int i=0; i<2; i++)
         {
-            for(int j=0; j<5-counter; j++) crossing_points[i][j]=new voronoi.Point();
+            for(int j=0; j<2-counter; j++) crossing_points[i][j]=new voronoi.Point();
             counter++;
         }
 
         // Validation of randomly picked points:
-        for(int i=0; i<6; i++)
+        for(int i=0; i<3; i++)
         {
             points[i] = new voronoi.Point();
             System.out.println("Point " + (i + 1) + ". parametres: x: " + points[i].x + " ,y: " + points[i].y);
@@ -61,10 +61,10 @@ public class Frame extends JFrame {
         // Calculating crossing points:
         counter=0;
         int pom1 = 1, pom2=1;
-        for(int i=0; i<5; i++)
+        for(int i=0; i<2; i++)
         {
             counter = pom2-1;
-            for(int j=0; j<5-counter; j++)
+            for(int j=0; j<2-counter; j++)
             {
                 crossing_points[i][j] = new voronoi.Point((points[i].x+points[pom1].x)/2,(points[i].y+points[pom1].y)/2);
                 pom1++;
@@ -75,9 +75,9 @@ public class Frame extends JFrame {
 
         // Output of crossing point parametres:
         counter=0;
-        for(int i=0; i<5; i++)
+        for(int i=0; i<2; i++)
         {
-            for(int j=0; j<5-counter; j++)
+            for(int j=0; j<2-counter; j++)
             {
                 System.out.println("Crossing point of "+i+". and "+j+". parametres: x:" +crossing_points[i][j].x+ " y:" +crossing_points[i][j].y);
             }
@@ -176,7 +176,7 @@ public class Frame extends JFrame {
         g2D.setPaint(Color.BLACK);
 
         //Drawing generated points
-        for(int i=0; i<6; i++)
+        for(int i=0; i<3; i++)
         {
             g2D.setPaint(Color.BLACK);
             g2D.drawOval(points[i].x, points[i].y, 2, 2);
@@ -185,9 +185,9 @@ public class Frame extends JFrame {
         //Drawing lines
         g2D.setStroke(new BasicStroke(1));
         int counter=1;
-        for(int i=0; i<6; i++)
+        for(int i=0; i<3; i++)
         {
-            for(int j=counter; j<6; j++)
+            for(int j=counter; j<3; j++)
             {
                 g2D.drawLine(points[i].x, points[i].y, points[j].x, points[j].y);
             }
@@ -197,9 +197,9 @@ public class Frame extends JFrame {
         counter=0;
         int number_of_color_g=153, number_of_color_b=153;
         g2D.setStroke(new BasicStroke(5));
-        for(int i=0; i<5; i++)
+        for(int i=0; i<2; i++)
         {
-            for(int j=0; j<5-counter; j++)
+            for(int j=0; j<2-counter; j++)
             {
                 g2D.setPaint(new Color(201, number_of_color_g, number_of_color_b, 255));
                 g2D.drawOval(crossing_points[i][j].x, crossing_points[i][j].y, 2, 2);
@@ -210,9 +210,9 @@ public class Frame extends JFrame {
         }
 
         counter=0;
-        for(int i=0; i<5; i++) {
-            for(int j=0; j<5; j++) {
-                for(int k=0; k<5; k++) {
+        /*for(int i=0; i<2; i++) {
+            for(int j=0; j<2; j++) {
+                for(int k=0; k<2; k++) {
                     if(i!=j&&j!=k&&i!=k) {
                         Circle circle = findCircle(points[i], points[j], points[k]);
                         g2D.setStroke(new BasicStroke(1));
@@ -221,11 +221,21 @@ public class Frame extends JFrame {
                     }
                 }
             }
-        }
+        }*/
 
         /*Circle circle1 = new Circle(points[0], (int)Math.sqrt(Math.pow((points[0].x+points[1].x),2)+Math.pow((points[0].y+points[1].y),2)));
         g2D.setStroke(new BasicStroke(1));
         g2D.setPaint(Color.BLACK);
         g2D.drawOval(circle1.centre.x, circle1.centre.y, (int)circle1.radius, (int)circle1.radius);*/
+        Circle circle = findCircle(points[0],points[1],points[2]);
+        g2D.drawOval(circle.centre.x, circle.centre.y, 3, 3);
+
+        for(int i=0; i<2; i++){
+            for(int j=0; j<2; j++){
+                g2D.setStroke(new BasicStroke(1));
+                g2D.setPaint(Color.pink);
+                g2D.drawLine(crossing_points[i][j].x, crossing_points[i][j].y, circle.centre.x, circle.centre.y);
+            }
+        }
     }
 }
