@@ -18,4 +18,10 @@ public class Point {
         this.x=myRandom1();
         this.y=myRandom1();
     }
+
+    Point(int x, int y)
+    {
+        this.x=x;
+        this.y=y;
+    }
 }

@@ -3,7 +3,6 @@ package voronoi;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.Point;
 
 public class Frame extends JFrame {
 
@@ -11,7 +10,6 @@ public class Frame extends JFrame {
     voronoi.Point[] points;
     voronoi.Point[][] crossing_points;
     Line[][] lines;
-    Boolean[][] crossing_lines;
     Graphics graphics;
 
     Frame()
@@ -33,6 +31,7 @@ public class Frame extends JFrame {
 
     void points_generator()
     {
+        // Declaratrion of arrays, selecting points:
         points = new voronoi.Point[6];
         crossing_points = new voronoi.Point[5][];
         int counter=5;
@@ -42,13 +41,13 @@ public class Frame extends JFrame {
             counter--;
         }
         counter=0;
-
         for(int i=0; i<5; i++)
         {
             for(int j=0; j<5-counter; j++) crossing_points[i][j]=new voronoi.Point();
             counter++;
         }
 
+        // Validation of randomly picked points:
         for(int i=0; i<6; i++)
         {
             points[i] = new voronoi.Point();
@@ -59,63 +58,22 @@ public class Frame extends JFrame {
             }
         }
 
-        /*counter=0;
+        // Calculating crossing points:
+        counter=0;
+        int pom1 = 1, pom2=1;
         for(int i=0; i<5; i++)
         {
+            counter = pom2-1;
             for(int j=0; j<5-counter; j++)
             {
-                crossing_points[i][j]= new Point();
-                crossing_points[i][j].x=(points[i].x+points[j].x)/2;
-                crossing_points[i][j].x=(points[i].y+points[j].y)/2;;
-                counter++;
+                crossing_points[i][j] = new voronoi.Point((points[i].x+points[pom1].x)/2,(points[i].y+points[pom1].y)/2);
+                pom1++;
             }
-        }*/
+            pom2++;
+            pom1 = pom2;
+        }
 
-        crossing_points[0][0].x=(points[0].x+points[1].x)/2;
-        crossing_points[0][0].y=(points[0].y+points[1].y)/2;
-
-        crossing_points[0][1].x=(points[0].x+points[2].x)/2;
-        crossing_points[0][1].y=(points[0].y+points[2].y)/2;
-
-        crossing_points[0][2].x=(points[0].x+points[3].x)/2;
-        crossing_points[0][2].y=(points[0].y+points[3].y)/2;
-
-        crossing_points[0][3].x=(points[0].x+points[4].x)/2;
-        crossing_points[0][3].y=(points[0].y+points[4].y)/2;
-
-        crossing_points[0][4].x=(points[0].x+points[5].x)/2;
-        crossing_points[0][4].y=(points[0].y+points[5].y)/2;
-
-        crossing_points[1][0].x=(points[1].x+points[2].x)/2;
-        crossing_points[1][0].y=(points[1].y+points[2].y)/2;
-
-        crossing_points[1][1].x=(points[1].x+points[3].x)/2;
-        crossing_points[1][1].y=(points[1].y+points[3].y)/2;
-
-        crossing_points[1][2].x=(points[1].x+points[4].x)/2;
-        crossing_points[1][2].y=(points[1].y+points[4].y)/2;
-
-        crossing_points[1][3].x=(points[1].x+points[5].x)/2;
-        crossing_points[1][3].y=(points[1].y+points[5].y)/2;
-
-        crossing_points[2][0].x=(points[2].x+points[3].x)/2;
-        crossing_points[2][0].y=(points[2].y+points[3].y)/2;
-
-        crossing_points[2][1].x=(points[2].x+points[4].x)/2;
-        crossing_points[2][1].y=(points[2].y+points[4].y)/2;
-
-        crossing_points[2][2].x=(points[2].x+points[5].x)/2;
-        crossing_points[2][2].y=(points[2].y+points[5].y)/2;
-
-        crossing_points[3][0].x=(points[3].x+points[4].x)/2;
-        crossing_points[3][0].y=(points[3].y+points[4].y)/2;
-
-        crossing_points[3][1].x=(points[3].x+points[5].x)/2;
-        crossing_points[3][1].y=(points[3].y+points[5].y)/2;
-
-        crossing_points[4][0].x=(points[4].x+points[5].x)/2;
-        crossing_points[4][0].y=(points[4].y+points[5].y)/2;
-
+        // Output of crossing point parametres:
         counter=0;
         for(int i=0; i<5; i++)
         {
@@ -173,28 +131,6 @@ public class Frame extends JFrame {
             counter++;
         }
     }
-
-    /*Boolean[][] crossing_lines(Line[][] lines)
-    {
-        //Array initialization
-        crossing_lines=new Boolean[5][];
-        int counter=5;
-        for(int i=0; i<5; i++)
-        {
-            crossing_lines[i]=new Boolean[counter];
-            counter--;
-        }
-
-        //Checking crossings
-        counter=1;
-        for(int i=0; i<6; i++)
-        {
-            for(int j=counter; j<6; j++)
-            {
-
-            }
-        }
-    }*/
 
     public void paint(Graphics g)
     {
