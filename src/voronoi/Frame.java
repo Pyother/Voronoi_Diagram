@@ -9,8 +9,11 @@ public class Frame extends JFrame {
     Border border;
     voronoi.Point[] points;
     voronoi.Point[][] crossing_points;
+    voronoi.Point[] infinity_points;
     Line[][] lines;
+    Line[] crossing_lines;
     Graphics graphics;
+    voronoi.Point pom[];
 
     Frame()
     {
@@ -46,6 +49,10 @@ public class Frame extends JFrame {
             for(int j=0; j<2-counter; j++) crossing_points[i][j]=new voronoi.Point();
             counter++;
         }
+
+        /*points[0] = new voronoi.Point(100,200);
+        points[1] = new voronoi.Point(200,100);
+        points[2] = new voronoi.Point(300,300);*/
 
         // Validation of randomly picked points:
         for(int i=0; i<3; i++)
@@ -109,18 +116,19 @@ public class Frame extends JFrame {
 
     void straights_equation()
     {
-        lines = new Line[5][];
-        int counter=5;
-        for(int i=0; i<5; i++)
+        // Declaring and filling arrays:
+        lines = new Line[2][];
+        int counter=2;
+        for(int i=0; i<2; i++)
         {
             lines[i]=new Line[counter];
             counter--;
         }
 
         counter=0;
-        for(int i=0; i<5; i++)
+        for(int i=0; i<2; i++)
         {
-            for(int j=0; j<5-counter; j++) lines[i][j] = new voronoi.Line(points[i],points[j]);
+            for(int j=0; j<2-counter; j++) lines[i][j] = new voronoi.Line(points[i],points[j]);
             counter++;
         }
 
@@ -131,6 +139,34 @@ public class Frame extends JFrame {
             counter++;
         }
     }
+
+    void infinity_lines(Circle circle) {
+        crossing_lines = new Line[3];
+        crossing_lines[0] = new Line(circle.centre, crossing_points[0][0]);
+        crossing_lines[1] = new Line(circle.centre, crossing_points[0][1]);
+        crossing_lines[2] = new Line(circle.centre, crossing_points[1][0]);
+
+        pom = new Point[3];
+        pom[0] = crossing_points[0][0];
+        pom[1] = crossing_points[0][1];
+        pom[2] = crossing_points[1][0];
+
+        // Calculating infinty points:
+        infinity_points = new Point[3];
+
+        for(int i=0; i<3; i++) {
+            if (circle.centre.x <= pom[i].x) {
+                int point_x = (int) ((-1) * (crossing_lines[i].intercept / crossing_lines[i].slope));
+                int point_y = (int) (point_x * crossing_lines[i].slope + crossing_lines[i].intercept);
+                infinity_points[i] = new Point(point_x, point_y);
+            } else if (circle.centre.x > pom[i].x) {
+                int point_x = (int) ((-1) * (500 - crossing_lines[i].intercept / crossing_lines[i].slope));
+                int point_y = (int) (point_x * crossing_lines[i].slope + crossing_lines[i].intercept);
+                infinity_points[i] = new Point(point_x, point_y);
+            }
+        }
+    }
+
 
     Circle findCircle(Point p1, Point p2, Point p3){
 
@@ -169,8 +205,7 @@ public class Frame extends JFrame {
         return new Circle(new Point(h, k), (int)r);
     }
 
-    public void paint(Graphics g)
-    {
+    public void paint(Graphics g) {
         Graphics2D g2D = (Graphics2D) g;
         g2D.setStroke(new BasicStroke(7));
         g2D.setPaint(Color.BLACK);
@@ -230,12 +265,22 @@ public class Frame extends JFrame {
         Circle circle = findCircle(points[0],points[1],points[2]);
         g2D.drawOval(circle.centre.x, circle.centre.y, 3, 3);
 
-        for(int i=0; i<2; i++){
-            for(int j=0; j<2; j++){
-                g2D.setStroke(new BasicStroke(1));
-                g2D.setPaint(Color.pink);
-                g2D.drawLine(crossing_points[i][j].x, crossing_points[i][j].y, circle.centre.x, circle.centre.y);
-            }
+        infinity_lines(circle);
+
+        for(int i=0; i<3; i++) System.out.println("Infinity point: x = "+infinity_points[i].x+" y = "+infinity_points[i].y);
+
+        for(int i=0; i<3; i++){
+            g2D.setStroke(new BasicStroke(1));
+            g2D.setPaint(Color.pink);
+            g2D.drawLine(circle.centre.x, circle.centre.y, infinity_points[i].x, infinity_points[i].y);
+        }
+
+        for(int i=0; i<3; i++){
+            g2D.setStroke(new BasicStroke(1));
+            g2D.setPaint(Color.pink);
+            g2D.drawLine(pom[i].x, pom[i].y, circle.centre.x, circle.centre.y);
         }
     }
+
+
 }
