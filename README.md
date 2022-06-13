@@ -4,9 +4,7 @@ This repository contains a simple implementation of 2D Voronoi Diagram calculate
 
 ## Table of contents
 * [Introduction](#introduction)
-* [Functional principle](#functional-principle)
 * [Technologies](#technologies)
-* [Implementation](#implementation)
 * [Sources](#sources)
 
 ## Introduction
@@ -35,13 +33,15 @@ At the end, you can cover the intersection points, the center of the circle and 
 
 ![obraz](https://user-images.githubusercontent.com/77791657/173358871-f360b199-d9ee-492a-bd06-e092c5302cc6.png)
 
-## Functional principle
-
 ## Technologies
 
+The project was made entirely in Java. The paint method was used to draw elements, thanks to which the interface of the frame was designed.
 
-
-## Implementation
+**List of crucial classes:**
+* java.util.Arrays (storing data)
+* java.util.Random (random points)
+* javax.swing (frame interface)
+* java.awt (geometric structures)
 
 ## Sources
 
