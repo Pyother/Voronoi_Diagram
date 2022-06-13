@@ -39,6 +39,14 @@ At the end, you can cover the intersection points, the center of the circle and 
 
 ## Technologies
 
+The project was made entirely in Java. The paint method was used to draw elements, thanks to which the interface of the frame was designed.
+
+**List of crucial classes:**
+* java.util.Arrays (storing data)
+* java.util.Random (random points)
+* javax.swing (frame interface)
+* java.awt (geometric structures)
+
 ## Implementation
 
 ## Sources
