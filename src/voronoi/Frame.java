@@ -3,13 +3,16 @@ package voronoi;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.Arrays;
+import java.util.Random;
 
 public class Frame extends JFrame {
 
     Border border;
     voronoi.Point[] points;
     voronoi.Point[][] crossing_points;
-    voronoi.Point[] infinity_points;
+    voronoi.Point[] infinity_points1;
     Line[][] lines;
     Line[] crossing_lines;
     Graphics graphics;
@@ -35,34 +38,50 @@ public class Frame extends JFrame {
     void points_generator()
     {
         // Declaratrion of arrays, selecting points:
-        points = new voronoi.Point[3];
-        crossing_points = new voronoi.Point[2][];
+        points = new Point[3];
+        crossing_points = new Point[2][];
         int counter=2;
         for(int i=0; i<2; i++)
         {
-            crossing_points[i]=new voronoi.Point[counter];
+            crossing_points[i]=new Point[counter];
             counter--;
         }
         counter=0;
         for(int i=0; i<2; i++)
         {
-            for(int j=0; j<2-counter; j++) crossing_points[i][j]=new voronoi.Point();
+            for(int j=0; j<2-counter; j++) crossing_points[i][j]=new Point();
             counter++;
         }
 
-        /*points[0] = new voronoi.Point(100,200);
-        points[1] = new voronoi.Point(200,100);
-        points[2] = new voronoi.Point(300,300);*/
+        points[0] = new voronoi.Point(100,200);
+        points[1] = new voronoi.Point(300,300);
+        points[2] = new voronoi.Point(200,400);
 
-        // Validation of randomly picked points:
-        for(int i=0; i<3; i++)
-        {
-            points[i] = new voronoi.Point();
-            System.out.println("Point " + (i + 1) + ". parametres: x: " + points[i].x + " ,y: " + points[i].y);
-            while(points_validation(i)==false) {
-                points[i] = new voronoi.Point();
-                System.out.println("Point " + (i + 1) + ". parametres: x: " + points[i].x + " ,y: " + points[i].y);
+        for(int i=0; i<3; i++) points[i] = new Point();
+
+        // Lines between points:
+        Line[] lines = new Line[3];
+        /*lines[0] = new Line(points[0], points[1]);
+        lines[1] = new Line(points[0], points[2]);
+        lines[2] = new Line(points[1], points[2]);*/
+
+        double[] length = new double[3];
+        length[0]= Math.sqrt((points[0].x - points[1].x)*(points[0].x - points[1].x) + (points[0].y - points[1].y)*(points[0].y - points[1].y));
+        length[1]= Math.sqrt((points[0].x - points[2].x)*(points[0].x - points[2].x) + (points[0].y - points[2].y)*(points[0].y - points[2].y));
+        length[2]= Math.sqrt((points[1].x - points[2].x)*(points[1].x - points[2].x) + (points[1].y - points[2].y)*(points[1].y - points[2].y));
+        Arrays.sort(length);
+        System.out.println("Sides length: "+length[0]+" "+length[1]+" "+length[2]);
+
+        while(length[2]*length[2]>=length[1]*length[1]+length[0]*length[0]) {
+            // Validation of randomly picked points:
+            for(int i=0; i<3; i++){
+                points[i].x = myRandom1();
+                points[i].y = myRandom1();
             }
+            length[0]= Math.sqrt((points[0].x - points[1].x)*(points[0].x - points[1].x) + (points[0].y - points[1].y)*(points[0].y - points[1].y));
+            length[1]= Math.sqrt((points[0].x - points[2].x)*(points[0].x - points[2].x) + (points[0].y - points[2].y)*(points[0].y - points[2].y));
+            length[2]= Math.sqrt((points[1].x - points[2].x)*(points[1].x - points[2].x) + (points[1].y - points[2].y)*(points[1].y - points[2].y));
+            Arrays.sort(length);
         }
 
         // Calculating crossing points:
@@ -73,7 +92,7 @@ public class Frame extends JFrame {
             counter = pom2-1;
             for(int j=0; j<2-counter; j++)
             {
-                crossing_points[i][j] = new voronoi.Point((points[i].x+points[pom1].x)/2,(points[i].y+points[pom1].y)/2);
+                crossing_points[i][j] = new Point((points[i].x+points[pom1].x)/2,(points[i].y+points[pom1].y)/2);
                 pom1++;
             }
             pom2++;
@@ -114,32 +133,6 @@ public class Frame extends JFrame {
         return true;
     }
 
-    void straights_equation()
-    {
-        // Declaring and filling arrays:
-        lines = new Line[2][];
-        int counter=2;
-        for(int i=0; i<2; i++)
-        {
-            lines[i]=new Line[counter];
-            counter--;
-        }
-
-        counter=0;
-        for(int i=0; i<2; i++)
-        {
-            for(int j=0; j<2-counter; j++) lines[i][j] = new voronoi.Line(points[i],points[j]);
-            counter++;
-        }
-
-        counter=0;
-        for(int i=0; i<15; i++) {
-            for (int j = 0; j < 5 - counter; j++)
-                if(i!=j)System.out.println("Line " + (i+1) + " -> " + (j+1) + " : y = " + (double)lines[i][j].slope + "x + " + (double)lines[i][j].intercept);
-            counter++;
-        }
-    }
-
     void infinity_lines(Circle circle) {
         crossing_lines = new Line[3];
         crossing_lines[0] = new Line(circle.centre, crossing_points[0][0]);
@@ -152,17 +145,41 @@ public class Frame extends JFrame {
         pom[2] = crossing_points[1][0];
 
         // Calculating infinty points:
-        infinity_points = new Point[3];
+        infinity_points1 = new Point[3];
 
-        for(int i=0; i<3; i++) {
-            if (circle.centre.x <= pom[i].x) {
-                int point_x = (int) ((-1) * (crossing_lines[i].intercept / crossing_lines[i].slope));
-                int point_y = (int) (point_x * crossing_lines[i].slope + crossing_lines[i].intercept);
-                infinity_points[i] = new Point(point_x, point_y);
-            } else if (circle.centre.x > pom[i].x) {
-                int point_x = (int) ((-1) * (500 - crossing_lines[i].intercept / crossing_lines[i].slope));
-                int point_y = (int) (point_x * crossing_lines[i].slope + crossing_lines[i].intercept);
-                infinity_points[i] = new Point(point_x, point_y);
+        double angle12 = Math.toDegrees(Math.abs((crossing_lines[0].slope-crossing_lines[1].slope)/(1+(crossing_lines[0].slope*crossing_lines[1].slope))));
+        double angle13 = Math.toDegrees(Math.abs((crossing_lines[0].slope-crossing_lines[2].slope)/(1+(crossing_lines[0].slope*crossing_lines[2].slope))));
+        double angle23 = Math.toDegrees(Math.abs((crossing_lines[1].slope-crossing_lines[2].slope)/(1+(crossing_lines[2].slope*crossing_lines[1].slope))));
+
+        double[] toSort = new double[]{angle12,angle13,angle23};
+        Arrays.sort(toSort);
+        System.out.println("Angles: "+angle23+" "+angle13+" "+angle12);
+
+        for(int i=0; i<3; i++){
+            if (circle.centre.x >= pom[i].x) {
+                System.out.println(true);
+                int point_x=0;
+                int point_y=(int)crossing_lines[i].intercept;
+                infinity_points1[i] = new Point(point_x, point_y);
+            }
+            if (circle.centre.x < pom[i].x) {
+                System.out.println(false);
+                int point_x=500;
+                int point_y=(int)(crossing_lines[i].slope*500+crossing_lines[i].intercept);
+                infinity_points1[i] = new Point(point_x, point_y);
+            }
+        }
+
+        if(toSort[1]==angle12&&toSort[2]==angle13||toSort[1]==angle13&&toSort[2]==angle12){
+            if (circle.centre.x >= pom[0].x) {
+                int point_x=500;
+                int point_y=(int)(crossing_lines[0].slope*500+crossing_lines[0].intercept);
+                infinity_points1[0] = new Point(point_x, point_y);
+            }
+            if (circle.centre.x < pom[0].x) {
+                int point_x=0;
+                int point_y=(int)crossing_lines[0].intercept;
+                infinity_points1[0] = new Point(point_x, point_y);
             }
         }
     }
@@ -218,7 +235,7 @@ public class Frame extends JFrame {
         }
 
         //Drawing lines
-        g2D.setStroke(new BasicStroke(1));
+        /*g2D.setStroke(new BasicStroke(1));
         int counter=1;
         for(int i=0; i<3; i++)
         {
@@ -226,10 +243,10 @@ public class Frame extends JFrame {
             {
                 g2D.drawLine(points[i].x, points[i].y, points[j].x, points[j].y);
             }
-        }
+        }*/
 
-        //Drawing crossing points
-        counter=0;
+        // Drawing crossing points:
+        /*counter=0;
         int number_of_color_g=153, number_of_color_b=153;
         g2D.setStroke(new BasicStroke(5));
         for(int i=0; i<2; i++)
@@ -242,45 +259,37 @@ public class Frame extends JFrame {
             number_of_color_g-=20;
             number_of_color_b-=20;
             counter++;
-        }
-
-        counter=0;
-        /*for(int i=0; i<2; i++) {
-            for(int j=0; j<2; j++) {
-                for(int k=0; k<2; k++) {
-                    if(i!=j&&j!=k&&i!=k) {
-                        Circle circle = findCircle(points[i], points[j], points[k]);
-                        g2D.setStroke(new BasicStroke(1));
-                        g2D.setPaint(Color.magenta);
-                        g2D.drawOval(circle.centre.x, circle.centre.y, 5, 5);
-                    }
-                }
-            }
         }*/
 
-        /*Circle circle1 = new Circle(points[0], (int)Math.sqrt(Math.pow((points[0].x+points[1].x),2)+Math.pow((points[0].y+points[1].y),2)));
-        g2D.setStroke(new BasicStroke(1));
-        g2D.setPaint(Color.BLACK);
-        g2D.drawOval(circle1.centre.x, circle1.centre.y, (int)circle1.radius, (int)circle1.radius);*/
         Circle circle = findCircle(points[0],points[1],points[2]);
-        g2D.drawOval(circle.centre.x, circle.centre.y, 3, 3);
+        //g2D.drawOval(circle.centre.x, circle.centre.y, 3, 3);
 
         infinity_lines(circle);
 
-        for(int i=0; i<3; i++) System.out.println("Infinity point: x = "+infinity_points[i].x+" y = "+infinity_points[i].y);
+        for(int i=0; i<3; i++) System.out.println("Infinity point: x = "+ infinity_points1[i].x+" y = "+ infinity_points1[i].y);
 
         for(int i=0; i<3; i++){
             g2D.setStroke(new BasicStroke(1));
             g2D.setPaint(Color.pink);
-            g2D.drawLine(circle.centre.x, circle.centre.y, infinity_points[i].x, infinity_points[i].y);
+            g2D.drawLine(circle.centre.x, circle.centre.y, infinity_points1[i].x, infinity_points1[i].y);
         }
 
-        for(int i=0; i<3; i++){
-            g2D.setStroke(new BasicStroke(1));
-            g2D.setPaint(Color.pink);
-            g2D.drawLine(pom[i].x, pom[i].y, circle.centre.x, circle.centre.y);
-        }
+        /*g2D.setStroke(new BasicStroke(1));
+        g2D.setPaint(Color.pink);
+        g2D.drawLine(circle.centre.x, circle.centre.y, crossing_points[0][0].x, crossing_points[0][0].y);
+        g2D.drawLine(circle.centre.x, circle.centre.y, crossing_points[0][1].x, crossing_points[0][1].y);
+        g2D.drawLine(circle.centre.x, circle.centre.y, crossing_points[1][0].x, crossing_points[1][0].y);
+        */
+
+
+
     }
+
+    public int myRandom1()
+    {
+        Random number = new Random();
+        return number.nextInt(500);
+    }//Function which gives random number from 0 to 500
 
 
 }
